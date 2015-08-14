@@ -78,8 +78,7 @@ clear:
     rts
 
 
-line1: .asc "             hello there!                "
-line2: .asc "     a boring example of text mode       "
+line1: .asc "            sid player v0.1              "
 
 
 init_text:
@@ -87,15 +86,42 @@ init_text:
 loop_text:
     lda line1, x
     sta $0590, x
-    lda line2, x
-    sta $05e0, x
 
     inx
     cpx #40         ; a line of text has 40 chars
     bne loop_text
     rts
 
+read_sid:
+    lda $d420 + $b       ; voice #1 control register (mirror)
+
+    ; print in hex
+    tax
+    and #$0f
+    jsr hex2asc
+    sta $05e0 + 11
+    txa
+    lsr
+    lsr
+    lsr
+    lsr
+    jsr hex2asc
+    sta $05e0 + 10
+
+    rts
+
+; Convert a hex digit ($00-$0F) to ASCII ('0'-'9' or 'A'-'F')
+hex2asc: .(
+    ora #$30        ; form the basic character code
+    cmp #$3a        ; does the result need adjustment?
+    bcc done
+    adc #$06        ; add 7 (6 and the carry) if needed
+done:
+    rts
+.)
+
 irq:
     dec $d019       ; acknowledge IRQ / clear register for next interrupt
     jsr music_play
+    jsr read_sid
     jmp $ea31       ; return to Kernel routine
