@@ -1,6 +1,6 @@
-*.swp
+gen_*.s
 *.o
 *.prg
-*.sid*
 recoder
-labels
+*.sid*
+*.swp

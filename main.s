@@ -4,10 +4,12 @@
 .segment "DATA"
 line1: .asciiz "            sid player v0.1              "
 
+SID_regs_base: .res 12, 0
+
 
 .segment "MUSIC"
 music:
-    .incbin "tune.sid", $7e
+    .incbin "tune.sid.fixed", $7e
 
 music_init = music
 music_play = music + 3
@@ -120,3 +122,7 @@ hex2asc:
     adc #$06        ; add 7 (6 and the carry) if needed
 @done:
     rts
+
+
+.segment "SID_WRITE"
+    .include "gen_sid_write.s"
