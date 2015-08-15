@@ -4,6 +4,7 @@
 
 #define CHUNK_SIZE 4096
 #define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
+#define LOG(...)  fprintf(stderr, __VA_ARGS__)
 
 const char STORE_OPCODES[] = {
     0x8d,   // sta $ffff
@@ -65,7 +66,7 @@ static void write_sty(const unsigned int oper, FILE* f) {
 
 int main(int argc, char *argv[]) {
     if (argc != 4) {
-        fprintf(stderr, "Usage: %s SID FIXED_SID GEN_ASM\n", argv[0]);
+        LOG("Usage: %s SID FIXED_SID GEN_ASM\n", argv[0]);
         return 1;
     }
 
@@ -75,19 +76,19 @@ int main(int argc, char *argv[]) {
 
     FILE* src = fopen(src_path, "rb");
     if (!src) {
-        fprintf(stderr, "Failed to open %s\n for reading", src_path);
+        LOG("Failed to open %s\n for reading", src_path);
         return 2;
     }
 
     FILE* dst = fopen(dst_path, "wb");
     if (!dst) {
-        fprintf(stderr, "Failed to open %s for writing\n", dst_path);
+        LOG("Failed to open %s for writing\n", dst_path);
         return 2;
     }
 
     FILE* gen_asm = fopen(gen_asm_path, "wb");
     if (!gen_asm) {
-        fprintf(stderr, "Failed to open %s for writing\n", gen_asm_path);
+        LOG("Failed to open %s for writing\n", gen_asm_path);
         return 2;
     }
 
@@ -122,7 +123,7 @@ int main(int argc, char *argv[]) {
 
                     stores_pos[stores++] = pos;
 
-                    printf("Found write ($%x) to SID register $%x at $%x\n", opcode, operand, global_pos + pos);
+                    LOG("Found write ($%x) to SID register $%x at $%x\n", opcode, operand, global_pos + pos);
                 }
                 ptr = memchr(ptr + 3, STORE_OPCODES[i], res);
             }
