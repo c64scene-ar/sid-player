@@ -11,7 +11,7 @@
 * = $1000
 
 music:
-    .bin $7e, 0, "demo.sid"
+    .bin $7e, 0, "demo.sid.fixed"
 
 music_init = music
 music_play = music + 3
