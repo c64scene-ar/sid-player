@@ -1,25 +1,23 @@
-; load PRG at $0801 to load "autostart routine"
-.byte $01, $08
-* = $0801
+.import __MAIN_CODE_LOAD__
 
-; BASIC autostart routine (aka "10 SYS 4096")
-.byte $0c, $08, $0a, $00, $9e, $20
-.byte $34, $39, $31, $35, $32            ; 49152 = $c000
-.byte $00, $00, $00
 
-.dsb $1000 - *  ; pad with zeroes from PC to $1000
-* = $1000
+.segment "DATA"
+line1: .asciiz "            sid player v0.1              "
 
+
+.segment "MUSIC"
 music:
-    .bin $7e, 0, "demo.sid.fixed"
+    .incbin "tune.sid", $7e
 
 music_init = music
 music_play = music + 3
 
-.dsb $c000 - *  ; pad with zeroes from PC to $c000
-* = $c000
 
-main:
+.segment "CODE"
+    jmp __MAIN_CODE_LOAD__
+
+
+.segment "MAIN_CODE"
     sei
 
     jsr init_screen   ; clear the screen
@@ -55,12 +53,19 @@ main:
     jmp *
 
 
+irq:
+    dec $d019       ; acknowledge IRQ / clear register for next interrupt
+    jsr music_play
+    jsr read_sid
+    jmp $ea31       ; return to Kernel routine
+
+
 init_screen:
     ldx #$00
     stx $d021     ; set background color
     stx $d020     ; set border color
 
-clear:
+@loop:
     lda #$20      ; #$20 is the spacebar Screen Code
     sta $0400, x  ; fill four areas with 256 spacebar characters
     sta $0500, x
@@ -74,22 +79,19 @@ clear:
     sta $dae8, x
 
     inx
-    bne clear
+    bne @loop
     rts
-
-
-line1: .asc "            sid player v0.1              "
 
 
 init_text:
     ldx #$00
-loop_text:
+@loop:
     lda line1, x
     sta $0590, x
 
     inx
     cpx #40         ; a line of text has 40 chars
-    bne loop_text
+    bne @loop
     rts
 
 read_sid:
@@ -101,27 +103,20 @@ read_sid:
     jsr hex2asc
     sta $05e0 + 11
     txa
-    lsr
-    lsr
-    lsr
-    lsr
+    .repeat 4
+      lsr
+    .endrepeat
     jsr hex2asc
     sta $05e0 + 10
 
     rts
 
+
 ; Convert a hex digit ($00-$0F) to ASCII ('0'-'9' or 'A'-'F')
-hex2asc: .(
+hex2asc:
     ora #$30        ; form the basic character code
     cmp #$3a        ; does the result need adjustment?
-    bcc done
+    bcc @done
     adc #$06        ; add 7 (6 and the carry) if needed
-done:
+@done:
     rts
-.)
-
-irq:
-    dec $d019       ; acknowledge IRQ / clear register for next interrupt
-    jsr music_play
-    jsr read_sid
-    jmp $ea31       ; return to Kernel routine
