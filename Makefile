@@ -1,4 +1,5 @@
 XA=xa
+XAFLAGS=-OPETSCII -llabels
 BIN=simple_player.prg
 
 CFLAGS=-Wall -O3 --std=c99
@@ -6,7 +7,7 @@ CFLAGS=-Wall -O3 --std=c99
 all: $(BIN) recoder
 
 $(BIN): main.s $(SRC)
-	$(XA) -OPETSCII -o $@ $^
+	$(XA) $(XAFLAGS) -o $@ $^
 
 recoder: recoder.c
 	$(CC) $(CFLAGS) $^ -o $@
