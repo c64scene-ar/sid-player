@@ -9,7 +9,7 @@ SID_regs_base: .res 12, 0
 
 .segment "MUSIC"
 music:
-    .incbin "tune.sid.fixed", $7e
+    .incbin "tune.sid.1", $7e
 
 music_init = music
 music_play = music + 3
