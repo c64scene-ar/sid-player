@@ -1,6 +1,4 @@
 gen_*.s
-*.o
 *.prg
-recoder
 *.sid*
 *.swp
