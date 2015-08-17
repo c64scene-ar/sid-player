@@ -27,6 +27,14 @@ skip:
 .endmacro
 
 
+CHAR_BACKGROUND_COLOR = $0
+CHAR_MULTICOLOR_1 = $b
+CHAR_MULTICOLOR_2 = $1
+CH1_CHAR_COLOR = $5
+CH2_CHAR_COLOR = $7
+CH3_CHAR_COLOR = $a
+
+
 .segment "DATA"
 line1: .asciiz "            sid player  v0.1             "
 
@@ -63,6 +71,9 @@ SID_regs_base:
 
     .incbin "gen_music.dat", music_offset_data + 2
 
+.segment "SPRITES"
+    .incbin "sprites.dat"
+
 
 .segment "CODE"
     jmp __MAIN_CODE_LOAD__
@@ -73,6 +84,7 @@ SID_regs_base:
 
     jsr init_screen   ; clear the screen
     jsr init_text     ; write lines of text
+    jsr init_sprite   ; enable sprite
 
     lda #%01111111
     sta CIA1_ICR      ; turn off CIAs Timer interrupts
@@ -145,6 +157,51 @@ init_text:
     bne @loop
     rts
 
+init_sprite:
+    lda #%00000111  ; enable 3 sprites
+    sta VIC_SPR_ENA
+
+    lda #%00000111  ; set multicolor mode for sprites
+    sta VIC_SPR_MCOLOR
+
+    lda #%00000000  ; all sprites have priority over background
+    sta VIC_SPR_BG_PRIO
+
+    ; set shared colors
+    lda #CHAR_BACKGROUND_COLOR
+    sta VIC_BG_COLOR0
+    lda #CHAR_MULTICOLOR_1
+    sta VIC_SPR_MCOLOR0
+    lda #CHAR_MULTICOLOR_2
+    sta VIC_SPR_MCOLOR1
+
+    ; set sprite colors
+    lda #CH1_CHAR_COLOR
+    sta VIC_SPR0_COLOR
+    lda #CH2_CHAR_COLOR
+    sta VIC_SPR1_COLOR
+    lda #CH3_CHAR_COLOR
+    sta VIC_SPR2_COLOR
+
+    lda #$c0
+    .repeat 3, i
+      sta $07f8 + i
+    .endrepeat
+
+    lda #$a8
+    sta VIC_SPR0_Y
+    sta VIC_SPR1_Y
+    sta VIC_SPR2_Y
+
+    lda #$30
+    sta VIC_SPR0_X
+    lda #$40
+    sta VIC_SPR1_X
+    lda #$50
+    sta VIC_SPR2_X
+
+    rts
+
 read_sid:
     lda ch1_cr
     print_hex_byte $05e0 + 14
@@ -154,6 +211,18 @@ read_sid:
 
     lda ch3_cr
     print_hex_byte $05e0 + 24
+
+    lda ch1_cr
+    adc #$60
+    sta VIC_SPR0_X
+
+    lda ch2_cr
+    adc #$60
+    sta VIC_SPR1_X
+
+    lda ch3_cr
+    adc #$60
+    sta VIC_SPR2_X
 
     rts
 
