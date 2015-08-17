@@ -13,7 +13,7 @@ $(BIN): $(SRC) $(GEN_SID) c64-asm.cfg
 	$(CC) $(CFLAGS) -o $(BIN) $(SRC)
 
 $(GEN_SID): $(SID) recode_sid.py
-	./recode_sid.py $(SID) --sid-file $(GEN_SID) --asm-file $(GEN_ASM) --sa-routine-address c500
+	./recode_sid.py $(SID) --output-sid $(GEN_SID) --output-asm $(GEN_ASM) --sa-routine-address c500
 
 clean:
 	rm -f $(BIN) $(GEN_SID) $(GEN_ASM) *.o

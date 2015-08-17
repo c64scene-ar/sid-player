@@ -35,12 +35,12 @@ def main():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument("SID", help="Original .sid file")
-    parser.add_argument("--sid-file", default="gen_music.dat",
+    parser.add_argument("--output-sid", default="gen_music.dat",
             help="Generated .sid file for player")
-    parser.add_argument("--asm-file", default="gen_music.s",
+    parser.add_argument("--output-asm", default="gen_music.s",
             help="Generated .asm file with subroutines for setting shadow variables")
     parser.add_argument("--sid-address", default=1000,
-            help="Base address of SID file in player (base 16)")
+            help="Base address of .sid file in player (base 16)")
     parser.add_argument("--sa-routine-address",
             help="Base address of routines that set shadow variables (base 16)")
     parser.add_argument("--sa-label", default="SID_sh",
@@ -85,10 +85,10 @@ def main():
         new_inst = "\x20" + pack_short(jsr_operand)
         data = data[:m.start()] + new_inst + data[m.end():]
 
-    with open(args.sid_file, 'wb') as f:
+    with open(args.output_sid, 'wb') as f:
         f.write(data)
 
-    with open(args.asm_file, 'wb') as f:
+    with open(args.output_asm, 'wb') as f:
         for opcode, operand in jsr_routines:
             a = stores[opcode] % "$%x" % operand
             b = stores[opcode] % "%s + $%x" % (args.sa_label, operand & 0xff)
