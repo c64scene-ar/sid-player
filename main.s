@@ -67,11 +67,6 @@ SID_sh:
 
 
 .segment "MUSIC"
-    music_offset_data = $7c
-    music_init = $1000
-    music_play = $1003
-
-    .incbin  "gen_music.dat", music_offset_data + 2
     .include "gen_music.inc"
 
 
