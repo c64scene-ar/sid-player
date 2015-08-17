@@ -8,21 +8,17 @@ FIXED_SID=$(SID).1
 GEN_ASM=gen_sid_write.s
 
 
-all: $(BIN) recode
+all: $(BIN)
 
 $(BIN): $(SRC) $(FIXED_SID) c64-asm.cfg
 	$(CC) $(CFLAGS) -o $(BIN) $(SRC)
 
-$(FIXED_SID): $(SID) recode
-	recoder/recode $(SID) $(FIXED_SID) $(GEN_ASM)
-
-recode: recoder/main.c
-	make -C recoder
+$(FIXED_SID): $(SID) recode_sid.py
+	./recode_sid.py $(SID) $(FIXED_SID) $(GEN_ASM)
 
 
 clean:
 	rm -f $(BIN) $(FIXED_SID) $(GEN_ASM)
-	make -C recoder clean
 
 run: $(BIN)
 	x64 $<

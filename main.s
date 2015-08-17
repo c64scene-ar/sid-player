@@ -4,7 +4,7 @@
 .segment "DATA"
 line1: .asciiz "            sid player v0.1              "
 
-SID_regs_base: .res 12, 0
+SID_regs_base: .res $20, 0
 
 
 .segment "MUSIC"
@@ -97,7 +97,7 @@ init_text:
     rts
 
 read_sid:
-    lda $d420 + $b       ; voice #1 control register (mirror)
+    lda SID_regs_base
 
     ; print in hex
     tax

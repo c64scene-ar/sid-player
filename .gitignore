@@ -2,3 +2,4 @@ gen_*.s
 *.prg
 *.sid*
 *.swp
+*.o
