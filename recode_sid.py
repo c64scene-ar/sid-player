@@ -15,7 +15,7 @@ stores = {
 
 sid_store_re = re.compile(r"""
     (?P<opcode>[\x8d\x9d\x99\x8e\x8c])
-    (?P<operand>[\x00-\x20]\xd4)
+    (?P<operand>[\x00-\x18]\xd4)
 """, re.X)
 
 jsr_opcode = 0x20
