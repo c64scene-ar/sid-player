@@ -56,8 +56,8 @@ SID_regs_base:
 
 .segment "MUSIC"
     music_offset_data = $7c
-    music_init = $1000
-    music_play = $1003
+    music_init = $152b
+    music_play = $1200
 
     .incbin "music.dat", music_offset_data + 2
 

@@ -1,6 +1,5 @@
 gen_*.inc
 *.prg
-music.sid
 music.dat
 *.swp
 *.o
