@@ -1,8 +1,32 @@
 .import __MAIN_CODE_LOAD__
 
+; Convert a hex digit ($00-$0F) to ASCII ('0'-'9' or 'A'-'F')
+.macro hex2asc
+    .local skip
+    ora #$30        ; form the basic character code
+    cmp #$3a        ; does the result need adjustment?
+    bcc skip
+    adc #$06        ; add 7 (6 and the carry) if needed
+skip:
+.endmacro
+
+; Print byte in hexadecimal at screen address
+.macro print_hex_byte addr
+    tax
+    and #$0f
+    hex2asc
+    sta addr + 1
+    txa
+    .repeat 4
+      lsr
+    .endrepeat
+    hex2asc
+    sta addr
+.endmacro
+
 
 .segment "DATA"
-line1: .asciiz "            sid player v0.1              "
+line1: .asciiz "            sid player  v0.1             "
 
 SID_regs_base:
   ch1_freq:    .word 0
@@ -120,30 +144,15 @@ init_text:
     rts
 
 read_sid:
-    lda SID_regs_base
+    lda ch1_cr
+    print_hex_byte $05e0 + 14
 
-    ; print in hex
-    tax
-    and #$0f
-    jsr hex2asc
-    sta $05e0 + 11
-    txa
-    .repeat 4
-      lsr
-    .endrepeat
-    jsr hex2asc
-    sta $05e0 + 10
+    lda ch2_cr
+    print_hex_byte $05e0 + 19
 
-    rts
+    lda ch3_cr
+    print_hex_byte $05e0 + 24
 
-
-; Convert a hex digit ($00-$0F) to ASCII ('0'-'9' or 'A'-'F')
-hex2asc:
-    ora #$30        ; form the basic character code
-    cmp #$3a        ; does the result need adjustment?
-    bcc @done
-    adc #$06        ; add 7 (6 and the carry) if needed
-@done:
     rts
 
 
