@@ -125,4 +125,4 @@ hex2asc:
 
 
 .segment "SID_WRITE"
-    .include "gen_sid_write.s"
+    .include "gen_sid_write.inc"

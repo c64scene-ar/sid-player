@@ -1,4 +1,4 @@
-gen_*.s
+gen_*.inc
 *.prg
 *.sid*
 *.swp

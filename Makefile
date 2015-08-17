@@ -5,7 +5,7 @@ BIN=player.prg
 SRC=main.s
 SID=tune.sid
 FIXED_SID=$(SID).1
-GEN_ASM=gen_sid_write.s
+GEN_ASM=gen_sid_write.inc
 
 
 all: $(BIN)
