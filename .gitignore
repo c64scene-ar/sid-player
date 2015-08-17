@@ -1,5 +1,4 @@
-gen_*.inc
+gen_*
 *.prg
-music.dat
 *.swp
 *.o

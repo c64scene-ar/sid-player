@@ -59,7 +59,7 @@ SID_regs_base:
     music_init = $152b
     music_play = $1200
 
-    .incbin "music.dat", music_offset_data + 2
+    .incbin "gen_music.dat", music_offset_data + 2
 
 
 .segment "CODE"
