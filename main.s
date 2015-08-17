@@ -38,6 +38,8 @@ CH3_CHAR_COLOR = $a
 .segment "DATA"
 line1: .asciiz "            sid player  v0.1             "
 
+.include "freq_pal.s"
+
 SID_regs_base:
   ch1_freq:    .word 0
   ch1_pw:      .word 0
@@ -66,8 +68,8 @@ SID_regs_base:
 
 .segment "MUSIC"
     music_offset_data = $7c
-    music_init = $152b
-    music_play = $1200
+    music_init = $1000
+    music_play = $1003
 
     .incbin "gen_music.dat", music_offset_data + 2
 
