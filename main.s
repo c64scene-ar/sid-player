@@ -40,7 +40,7 @@ line1: .asciiz "            sid player  v0.1             "
 
 .include "freq_pal.s"
 
-SID_regs_base:
+SID_sh:
   ch1_freq:    .word 0
   ch1_pw:      .word 0
   ch1_cr:      .byte 0
@@ -230,4 +230,4 @@ read_sid:
 
 
 .segment "SID_WRITE"
-    .include "gen_sid_write.inc"
+    .include "gen_music.inc"

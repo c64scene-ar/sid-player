@@ -28,23 +28,43 @@ jsr_routine_asm = """
 """
 jsr_routine_size = 8        # Routine size in bytes
 
-# TODO: This should be command-lne options
-jsr_base_addr = 0xc500
-sidregs_base_addr = 'SID_regs_base'
-
 
 def main():
-    parser = argparse.ArgumentParser(description='Recode .sid file for use in SID player.')
-    parser.add_argument("sid", help="Original .sid file")
-    parser.add_argument("gen_sid", help="Generated .sid file for player")
-    parser.add_argument("gen_asm", help="Generated .asm file with subroutines for setting shadow variables")
+    parser = argparse.ArgumentParser(
+        description='Recode .sid file for use in SID player.',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument("SID", help="Original .sid file")
+    parser.add_argument("--sid-file", default="gen_music.dat",
+            help="Generated .sid file for player")
+    parser.add_argument("--asm-file", default="gen_music.s",
+            help="Generated .asm file with subroutines for setting shadow variables")
+    parser.add_argument("--sid-address", default=1000,
+            help="Base address of SID file in player (base 16)")
+    parser.add_argument("--sa-routine-address",
+            help="Base address of routines that set shadow variables (base 16)")
+    parser.add_argument("--sa-label", default="SID_sh",
+            help="Label that references shadow variables base address")
 
     args = parser.parse_args()
 
-    jsr_routines = []
-
-    with open(args.sid, 'rb') as f:
+    with open(args.SID, 'rb') as f:
         data = f.read()
+
+    # Convert base 16 addresses to base 10 numbers.
+    args.sid_address = int(str(args.sid_address), 16)
+    if args.sa_routine_address:
+        args.sa_routine_address = int(str(args.sa_routine_address), 16)
+
+    # If sa_routine_address was not supplied, derive it from SID base address
+    # This means subroutines must be added *after* including SID file in the
+    # player source code.
+    # FIXME: This doesn't work yet. It must take into account dataOffset and
+    # loadAddress from headers.
+    if not args.sa_routine_address:
+        args.sa_routine_address = args.sid_address + len(data)
+
+    jsr_routines = []
 
     for m in sid_store_re.finditer(data):
         inst = instruction_from_match(m)
@@ -57,7 +77,7 @@ def main():
 
         # Calculate subroutine address to jump to
         jsr_offset = idx * jsr_routine_size
-        jsr_operand = jsr_base_addr + jsr_offset
+        jsr_operand = args.sa_routine_address + jsr_offset
 
         print_found_match(m.start(), inst, jsr_operand)
 
@@ -65,13 +85,13 @@ def main():
         new_inst = "\x20" + pack_short(jsr_operand)
         data = data[:m.start()] + new_inst + data[m.end():]
 
-    with open(args.gen_sid, 'wb') as f:
+    with open(args.sid_file, 'wb') as f:
         f.write(data)
 
-    with open(args.gen_asm, 'wb') as f:
+    with open(args.asm_file, 'wb') as f:
         for opcode, operand in jsr_routines:
             a = stores[opcode] % "$%x" % operand
-            b = stores[opcode] % "%s + $%x" % (sidregs_base_addr, operand & 0xff)
+            b = stores[opcode] % "%s + $%x" % (args.sa_label, operand & 0xff)
             f.write(jsr_routine_asm % (a, b))
 
     return 0
