@@ -1,5 +1,5 @@
 CC=cl65
-CFLAGS=-u __EXEHDR__ -t c64 -C c64-asm.cfg
+CFLAGS=-u __EXEHDR__ -t c64 -C c64-asm.cfg -l listing
 
 BIN=player.prg
 SRC=main.s
@@ -13,7 +13,7 @@ $(BIN): $(SRC) $(GEN_SID) c64-asm.cfg
 	$(CC) $(CFLAGS) -o $(BIN) $(SRC)
 
 $(GEN_SID): $(SID) recode_sid.py
-	./recode_sid.py $(SID) --output-sid $(GEN_SID) --output-asm $(GEN_ASM) --sa-routine-address c500
+	./recode_sid.py $(SID) --output-sid $(GEN_SID) --output-asm $(GEN_ASM)
 
 clean:
 	rm -f $(BIN) $(GEN_SID) $(GEN_ASM) *.o

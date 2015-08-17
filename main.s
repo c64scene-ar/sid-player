@@ -71,7 +71,9 @@ SID_sh:
     music_init = $1000
     music_play = $1003
 
-    .incbin "gen_music.dat", music_offset_data + 2
+    .incbin  "gen_music.dat", music_offset_data + 2
+    .include "gen_music.inc"
+
 
 .segment "SPRITES"
     .incbin "sprites.dat"
@@ -227,7 +229,3 @@ read_sid:
     sta VIC_SPR2_X
 
     rts
-
-
-.segment "SID_WRITE"
-    .include "gen_music.inc"

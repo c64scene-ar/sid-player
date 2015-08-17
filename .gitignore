@@ -2,3 +2,4 @@ gen_*
 *.prg
 *.swp
 *.o
+listing

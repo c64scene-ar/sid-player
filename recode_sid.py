@@ -39,8 +39,6 @@ def main():
             help="Generated .sid file for player")
     parser.add_argument("--output-asm", default="gen_music.s",
             help="Generated .asm file with subroutines for setting shadow variables")
-    parser.add_argument("--sid-address", default=1000,
-            help="Base address of .sid file in player (base 16)")
     parser.add_argument("--sa-routine-address",
             help="Base address of routines that set shadow variables (base 16)")
     parser.add_argument("--sa-label", default="SID_sh",
@@ -51,18 +49,42 @@ def main():
     with open(args.SID, 'rb') as f:
         data = f.read()
 
+    header = parse_sid_header(data)
+
+    print("magicID: %s" % header['magicID'])
+    print("version: %d" % header['version'])
+    print("dataOffset: $%x" % header['dataOffset'])
+    print("loadAddress: $%x" % header['loadAddress'])
+    print("initAddress: $%x" % header['initAddress'])
+    print("playAddress: $%x" % header['playAddress'])
+
     # Convert base 16 addresses to base 10 numbers.
-    args.sid_address = int(str(args.sid_address), 16)
     if args.sa_routine_address:
         args.sa_routine_address = int(str(args.sa_routine_address), 16)
 
-    # If sa_routine_address was not supplied, derive it from SID base address
+    # If sa_routine_address was not supplied, put at the end of SID data area
     # This means subroutines must be added *after* including SID file in the
     # player source code.
-    # FIXME: This doesn't work yet. It must take into account dataOffset and
-    # loadAddress from headers.
     if not args.sa_routine_address:
-        args.sa_routine_address = args.sid_address + len(data)
+        # If loadAddress header field is 0, it means the first 2 bytes of data
+        # is the *real* load address.
+        if header['loadAddress'] == 0:
+            la_str = data[header['dataOffset']:header['dataOffset'] + 2]
+            load_address = struct.unpack("<H", la_str)[0]
+        else:
+            load_address = header['loadAddress']
+
+        # End-of-data can be calculated using file size and dataOffset
+        eof_addr = load_address + len(data) - header['dataOffset']
+
+        # Skip 2 bytes of load address in data
+        if header['loadAddress'] == 0:
+            eof_addr = eof_addr - 2
+
+        args.sa_routine_address = eof_addr
+
+    print("routines address: $%x" % args.sa_routine_address)
+
 
     jsr_routines = []
 
@@ -82,7 +104,7 @@ def main():
         print_found_match(m.start(), inst, jsr_operand)
 
         # Replace Store for JSR in data
-        new_inst = "\x20" + pack_short(jsr_operand)
+        new_inst = "\x20" + struct.pack("<H", jsr_operand)
         data = data[:m.start()] + new_inst + data[m.end():]
 
     with open(args.output_sid, 'wb') as f:
@@ -99,7 +121,7 @@ def main():
 def instruction_from_match(m):
     opcode, operand = m.groups()
     opcode = ord(opcode)
-    operand = unpack_short(operand)
+    operand = struct.unpack("<H", operand)[0]
     return (opcode, operand)
 
 def print_found_match(pos, inst, jsr_operand):
@@ -107,11 +129,16 @@ def print_found_match(pos, inst, jsr_operand):
     inst_str = stores[opcode] % "$%x" % operand
     print("{0:04x}\t{1}\t-> jsr ${2:x}".format(pos, inst_str, jsr_operand))
 
-def unpack_short(s):
-    return struct.unpack("<H", s)[0]
-
-def pack_short(n):
-    return struct.pack("<H", n)
+def parse_sid_header(data):
+    h = {}
+    # SID files integer values are stored in big-endian format
+    h['magicID'] = data[0:4]
+    h['version'] = struct.unpack(">H", data[4:6])[0]
+    h['dataOffset'] = struct.unpack(">H", data[6:8])[0]
+    h['loadAddress'] = struct.unpack(">H", data[8:10])[0]
+    h['initAddress'] = struct.unpack(">H", data[10:12])[0]
+    h['playAddress'] = struct.unpack(">H", data[12:14])[0]
+    return h
 
 
 if __name__ == "__main__":
