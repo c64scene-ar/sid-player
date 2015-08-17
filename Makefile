@@ -3,8 +3,8 @@ CFLAGS=-u __EXEHDR__ -t c64 -C c64-asm.cfg
 
 BIN=player.prg
 SRC=main.s
-SID=tune.sid
-FIXED_SID=$(SID).1
+SID=music.sid
+FIXED_SID=music.dat
 GEN_ASM=gen_sid_write.inc
 
 
@@ -18,7 +18,7 @@ $(FIXED_SID): $(SID) recode_sid.py
 
 
 clean:
-	rm -f $(BIN) $(FIXED_SID) $(GEN_ASM)
+	rm -f $(BIN) $(FIXED_SID) $(GEN_ASM) *.o
 
 run: $(BIN)
 	x64 $<

@@ -8,11 +8,11 @@ SID_regs_base: .res $20, 0
 
 
 .segment "MUSIC"
-music:
-    .incbin "tune.sid.1", $7e
+    music_offset_data = $7c
+    music_init = $1000
+    music_play = $1003
 
-music_init = music
-music_play = music + 3
+    .incbin "music.dat", music_offset_data + 2
 
 
 .segment "CODE"
