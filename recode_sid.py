@@ -69,21 +69,22 @@ def main():
         f.write(data)
 
     with open(args.gen_asm, 'wb') as f:
-        for inst in jsr_routines:
-            a = stores[inst['opcode']] % "$%x" % inst['operand']
-            b = stores[inst['opcode']] % "%s + $%x" % (sidregs_base_addr, inst['operand'] & 0xff)
+        for opcode, operand in jsr_routines:
+            a = stores[opcode] % "$%x" % operand
+            b = stores[opcode] % "%s + $%x" % (sidregs_base_addr, operand & 0xff)
             f.write(jsr_routine_asm % (a, b))
 
     return 0
 
 def instruction_from_match(m):
-    h = m.groupdict()
-    h['opcode'] = ord(h['opcode'])
-    h['operand'] = unpack_short(h['operand'])
-    return h
+    opcode, operand = m.groups()
+    opcode = ord(opcode)
+    operand = unpack_short(operand)
+    return (opcode, operand)
 
 def print_found_match(pos, inst, jsr_operand):
-    inst_str = stores[inst['opcode']] % "$%x" % inst['operand']
+    opcode, operand = inst
+    inst_str = stores[opcode] % "$%x" % operand
     print("{0:04x}\t{1}\t-> jsr ${2:x}".format(pos, inst_str, jsr_operand))
 
 def unpack_short(s):
