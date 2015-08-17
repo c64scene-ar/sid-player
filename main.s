@@ -4,7 +4,30 @@
 .segment "DATA"
 line1: .asciiz "            sid player v0.1              "
 
-SID_regs_base: .res $20, 0
+SID_regs_base:
+  ch1_freq:    .word 0
+  ch1_pw:      .word 0
+  ch1_cr:      .byte 0
+  ch1_atk_dec: .byte 0
+  ch1_sus_rel: .byte 0
+
+  ch2_freq:    .word 0
+  ch2_pw:      .word 0
+  ch2_cr:      .byte 0
+  ch2_atk_dec: .byte 0
+  ch2_sus_rel: .byte 0
+
+  ch3_freq:    .word 0
+  ch3_pw:      .word 0
+  ch3_cr:      .byte 0
+  ch3_atk_dec: .byte 0
+  ch3_sus_rel: .byte 0
+
+  filter_cutoff_lo: .byte 0
+  filter_cutoff_hi: .byte 0
+  filter_cr:        .byte 0
+
+  volume_filter: .byte 0
 
 
 .segment "MUSIC"
