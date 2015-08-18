@@ -2,29 +2,11 @@
 
 .include "c64.inc"  ; C64 constants
 
-; Convert a hex digit ($00-$0F) to ASCII ('0'-'9' or 'A'-'F')
-.macro hex2asc
-    .local skip
-    ora #$30        ; form the basic character code
-    cmp #$3a        ; does the result need adjustment?
-    bcc skip
-    adc #$06        ; add 7 (6 and the carry) if needed
-skip:
-.endmacro
+.macpack macros     ; our macros
+.macpack cbm        ; for scrcode
 
-; Print byte in hexadecimal at screen address
-.macro print_hex_byte addr
-    tax
-    and #$0f
-    hex2asc
-    sta addr + 1
-    txa
-    .repeat 4
-      lsr
-    .endrepeat
-    hex2asc
-    sta addr
-.endmacro
+; from koala.s
+.import init_koala
 
 
 CHAR_BACKGROUND_COLOR = $0
@@ -36,7 +18,7 @@ CH3_CHAR_COLOR = $a
 
 
 .segment "DATA"
-line1: .asciiz "            sid player  v0.1             "
+line1: scrcode "            sid player  v0.1             "
 
 .include "freq_pal.s"
 
@@ -81,9 +63,8 @@ SID_sh:
 .segment "MAIN_CODE"
     sei
 
-    jsr init_screen   ; clear the screen
-    jsr init_text     ; write lines of text
-    jsr init_sprite   ; enable sprite
+    lda #$35
+    sta $01           ; no basic, no kernel
 
     lda #%01111111
     sta CIA1_ICR      ; turn off CIAs Timer interrupts
@@ -93,20 +74,26 @@ SID_sh:
 
     lda #$01          ; set Interrupt Request Mask
     sta VIC_IMR       ; we want IRQ by Rasterbeam (%00000001)
+    asl $d019
 
-    lda #<irq         ; point IRQ Vector to our custom irq routine
-    ldx #>irq
-    sta IRQVec        ; store in $314/$315
-    stx IRQVec+1
+    lda #30
+    sta $d012
+    lda #<irq_top     ; point IRQ Vector to our custom irq routine
+    ldx #>irq_top
+    sta $fffe
+    stx $ffff
 
-    lda #$00          ; trigger interrupt at row zero
-    sta VIC_HLINE
+    ; Vic bank 2: $8000-$BFFF
+    lda $dd00
+    and #$fc
+    ora #1
+    sta $dd00
 
-    lda #%00000011    ; VIC bank #0 ($0000-$3fff)
-    sta CIA2_PRA
+    jsr init_screen   ; clear the screen
+    jsr init_text     ; write lines of text
+    jsr init_sprite   ; enable sprite
+    jsr init_koala    ; display PVM logo
 
-    lda #%00010110    ; Screen RAM #0001 ($0400-$07FF), Char ROM #011 ($1800-$1FFF)
-    sta VIC_VIDEO_ADR
 
     lda #$00
     jsr music_init
@@ -115,11 +102,142 @@ SID_sh:
     jmp *
 
 
-irq:
-    dec VIC_IRR     ; acknowledge IRQ / clear register for next interrupt
-    jsr music_play
+irq_top:
+    pha             ; saves A, X, Y
+    txa
+    pha
+    tya
+    pha
+
+    sei
+    ; set koala mode
+    lda #%00111011
+    sta $d011
+
+    ; screen mem: $0400
+    ; bitmap  at $a000
+    ; charset: ignore
+    lda #%00011000
+    sta $d018
+
+    lda #72
+    sta $d012
+
+    ldx #<irq_rasterbars
+    ldy #>irq_rasterbars
+    stx $fffe
+    sty $ffff
+
+    asl $d019
+    cli
+
+    pla         ; restores A, X, Y
+    tay
+    pla
+    tax
+    pla
+    rti         ; restores previous PC, status
+
+irq_rasterbars:
+    pha             ; saves A, X, Y
+    txa
+    pha
+    tya
+    pha
+
+    STABILIZE_RASTER
+
+    sei
+
+    .repeat 37
+            nop
+    .endrepeat
+
+    .repeat 6
+        ; 7 "Good" lines: I must consume 63 cycles
+        .repeat 7
+            lda colors,x    ; +4
+            sta $d020       ; +4
+            ;sta $d021      ; +4
+            nop
+            nop
+            inx             ; +2
+            .repeat 23
+                nop         ; +2 * 23
+            .endrepeat
+            bit $00         ; +3 = 63 cycles
+        .endrepeat
+
+        ; 1 "Bad lines": I must consume 23 cycles
+        lda colors,x        ; +4
+        sta $d020           ; +4
+        ;sta $d021          ; +4
+        nop
+        nop
+        inx                 ; +2
+        .repeat 3
+            nop             ; +2 * 3
+        .endrepeat
+    .endrepeat
+
+    lda #150
+    sta $d012
+
+    ldx #<irq_bottom
+    ldy #>irq_bottom
+    stx $fffe
+    sty $ffff
+
+    asl $d019
+    cli
+
+    pla         ; restores A, X, Y
+    tay
+    pla
+    tax
+    pla
+    rti         ; restores previous PC, status
+
+irq_bottom:
+    pha             ; saves A, X, Y
+    txa
+    pha
+    tya
+    pha
+
+    sei
+    ; set text mode
+    lda #%00011011
+    sta $d011
+
+    ; screen mem: $0400
+    ; bitmap  at: ignore
+    ; charset: $1800
+    lda #%00010110
+    sta $d018
+
+    lda #40
+    sta $d012
+
+    ldx #<irq_top
+    ldy #>irq_top
+    stx $fffe
+    sty $ffff
+
+    asl $d019
+
     jsr read_sid
-    jmp $ea31       ; return to Kernel routine
+    jsr music_play
+
+    cli
+
+    pla         ; restores A, X, Y
+    tay
+    pla
+    tax
+    pla
+    rti         ; restores previous PC, status
+
 
 
 init_screen:
@@ -129,10 +247,10 @@ init_screen:
 @loop:
     lda #$20      ; #$20 is the spacebar Screen Code
     ; TODO: Use constant SCREEN_RAM + offset
-    sta $0400, x  ; fill four areas with 256 spacebar characters
-    sta $0500, x
-    sta $0600, x
-    sta $06e8, x
+    sta $8400, x  ; fill four areas with 256 spacebar characters
+    sta $8500, x
+    sta $8600, x
+    sta $86e8, x
 
     lda #$01      ; set foreground to black in Color RAM
     ; TODO: Use constant SCREEN_RAM + offset
@@ -149,7 +267,7 @@ init_text:
     ldx #$00
 @loop:
     lda line1, x
-    sta $0590, x
+    sta $8400 + 40*24, x
 
     inx
     cpx #40         ; a line of text has 40 chars
@@ -182,9 +300,9 @@ init_sprite:
     lda #CH3_CHAR_COLOR
     sta VIC_SPR2_COLOR
 
-    lda #$c0
+    lda #$00          ; sprites start at $0000 (relative to the bank)
     .repeat 3, i
-      sta $07f8 + i
+      sta $87f8 + i
     .endrepeat
 
     lda #$a8
@@ -203,13 +321,13 @@ init_sprite:
 
 read_sid:
     lda ch1_cr
-    print_hex_byte $05e0 + 14
+    print_hex_byte $8400+40*21 + 14
 
     lda ch2_cr
-    print_hex_byte $05e0 + 19
+    print_hex_byte $8400+40*21 + 19
 
     lda ch3_cr
-    print_hex_byte $05e0 + 24
+    print_hex_byte $8400+40*21 + 24
 
     lda ch1_cr
     adc #$60
@@ -224,3 +342,24 @@ read_sid:
     sta VIC_SPR2_X
 
     rts
+
+.align 256
+colors:
+    .byte $02,$02
+    .byte $00,$00
+    .byte $02,$02
+    .byte $00,$00,$00,$00,$00,$00
+    .byte $02,$02
+    .byte $00,$00
+    .byte $02,$02
+    .byte $00,$00,$00,$00,$00,$00
+    .byte $02,$02
+    .byte $00,$00
+    .byte $02,$02
+    .byte $00,$00,$00,$00,$00,$00
+    .byte $02,$02
+    .byte $00,$00
+    .byte $02,$02
+    .byte $00,$00,$00,$00,$00
+    .byte $00
+
