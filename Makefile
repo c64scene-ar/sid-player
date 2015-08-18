@@ -2,7 +2,7 @@ CC=cl65
 CFLAGS=-u __EXEHDR__ -t c64 -C c64-asm.cfg -l listing
 
 BIN=player.prg
-SRC=main.s
+SRC=main.s koala.s
 SID=music.sid
 GEN_SID=gen_music.dat
 GEN_ASM=gen_music.inc
