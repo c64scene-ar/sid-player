@@ -27,19 +27,6 @@ KOALA_BACKGROUND_DATA = KOALA_BITMAP_DATA + $2710
     lda KOALA_BACKGROUND_DATA
     sta $d021
 
-    jsr init_koala_colors
-    rts
-
-.endproc
-
-;--------------------------------------------------------------------------
-; init_koala_colors(void)
-;--------------------------------------------------------------------------
-; Args: -
-; puts the koala colors in the correct address
-; Assumes that bimap data was loaded in the correct position
-;--------------------------------------------------------------------------
-.proc init_koala_colors
 
     ; Koala format
     ; bitmap:           $0000 - $1f3f = $1f40 ( 8000) bytes
@@ -51,12 +38,14 @@ KOALA_BACKGROUND_DATA = KOALA_BITMAP_DATA + $2710
     ldx #$00
 @loop:
     ; $0400: colors %01, %10
+    ; only copy the 1st half of the screen. 2nd half will be text mode
     lda KOALA_CHARMEM_DATA,x
     sta $8400,x
     lda KOALA_CHARMEM_DATA+$0100,x
     sta $8400+$0100,x
 
     ; $d800: color %11
+    ; only copy the 1st half of the screen. 2nd half will be text mode
     lda KOALA_COLORMEM_DATA,x
     sta $d800,x
     lda KOALA_COLORMEM_DATA+$0100,x
