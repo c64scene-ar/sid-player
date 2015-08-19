@@ -16,6 +16,8 @@ CH1_CHAR_COLOR = $5
 CH2_CHAR_COLOR = $7
 CH3_CHAR_COLOR = $a
 
+DEBUG = 0
+
 
 .segment "DATA"
 line1: scrcode "            sid player  v0.1             "
@@ -99,8 +101,25 @@ SID_sh:
     jsr music_init
 
     cli
-    jmp *
 
+@mainloop:
+    lda sync    
+    beq @mainloop
+
+    dec sync
+
+.if DEBUG=1
+    inc $d020
+.endif
+
+    jsr read_sid
+    jsr music_play
+
+.if DEBUG=1
+    dec $d020
+.endif
+
+    jmp @mainloop
 
 irq_top:
     pha             ; saves A, X, Y
@@ -226,8 +245,7 @@ irq_bottom:
 
     asl $d019
 
-    jsr read_sid
-    jsr music_play
+    inc sync
 
     cli
 
@@ -302,7 +320,7 @@ init_sprite:
 
     lda #$00          ; sprites start at $0000 (relative to the bank)
     .repeat 3, i
-      sta $87f8 + i
+        sta $87f8 + i
     .endrepeat
 
     lda #$a8
@@ -343,7 +361,7 @@ read_sid:
 
     rts
 
-.align 256
+.align 64
 colors:
     .byte $02,$02
     .byte $00,$00
@@ -362,4 +380,6 @@ colors:
     .byte $02,$02
     .byte $00,$00,$00,$00,$00
     .byte $00
+
+sync: .byte  $00
 

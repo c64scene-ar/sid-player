@@ -14,9 +14,13 @@ stores = {
     0x99: "sta %s, y",
 }
 
+# regexp from $d404-$d406 instead of $d400-$d418
+# adding the extra "jsr" to the other
+# SID registers causes some weird noises
+# when playing certain instruments (that are cycle-dependant???)
 sid_store_re = re.compile(r"""
     (?P<opcode>[\x8d\x9d\x99\x8e\x8c])
-    (?P<operand>[\x00-\x18]\xd4)
+    (?P<operand>[\x04-\x06]\xd4)
 """, re.X)
 
 jsr_opcode = 0x20
