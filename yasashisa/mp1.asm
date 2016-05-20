@@ -32,7 +32,7 @@ _tmins		= $32		;playtime minutes
 _tpos		= $33		;playtime digit screen address $33,$34
 
 ; ***** Constants *****
-BEATINST = $02 ;Instrument to use for beat effect
+BEATINST = $05 ;Instrument to use for beat effect
 VUMETERS = $7f8 ;VU Meters sprite pointers
 
 ;**********************
