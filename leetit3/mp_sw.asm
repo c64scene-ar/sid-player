@@ -1003,7 +1003,7 @@ musicend:
 
 _SNameLabel:
 		!scrxor  $80,"4516 "
-		!scrxor  $80,"leet it 3"
+		!scrxor  $80,"leet it ["
 		!scrxor  $80," 0123"
 		
 _SAuthorLabel:	
