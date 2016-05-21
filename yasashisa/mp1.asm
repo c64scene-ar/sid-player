@@ -906,7 +906,7 @@ _SAuthorLabel:
 
 _SDateLabel:
 		!scr "released: "
-		!scr "28/05/16"
+		!scr "21/05/16"
 		
 _SPlayLabel:
 		!scr "playtime: 00:00"
