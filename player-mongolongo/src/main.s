@@ -631,7 +631,7 @@ credits_label:
                 ;0123456789|123456789|123456789|123456789|
         scrcode "             playtime: 0:00             "
         scrcode "                                        "
-        scrcode "    author: naku / los pat moritas      "
+        scrcode "        author:  los pat moritas        "
         scrcode "                                        "
         scrcode "           released: 21/05/16           "
         scrcode "                                        "
