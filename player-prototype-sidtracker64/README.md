@@ -35,7 +35,7 @@ SidTracker64 info:
 
 ### Actualizar las constantes de SidTracker64
 
-Estan por la linea 33:
+Estan por la [linea 33](https://github.com/c64scene-ar/sid-player/blob/master/player-prototype-sidtracker64/src/main.s#L33):
 
 * `SID_SHADOW0`
 * `SID_GATE0`
@@ -50,13 +50,13 @@ Estan por la linea 33:
 
 ### Actualizar los créditos
 
-Linea 631, debería estar la variable `credits_label`
+[Linea 630](https://github.com/c64scene-ar/sid-player/blob/master/player-prototype-sidtracker64/src/main.s#L630), debería estar la variable `credits_label`
 
 ![](https://lh3.googleusercontent.com/-pbAigkANIv0/V0w2LcVcR6I/AAAAAAABeJk/QtuuSWT4T9o80MSvdTuPHFm3v2lCCDXdACCo/s640/Screen%2BShot%2B2016-05-30%2Bat%2B9.36.53%2BAM.png)
 
 ### Actualizar el título
 
-Linea 648, debería estar la variable `turro_label`
+[Linea 648](https://github.com/c64scene-ar/sid-player/blob/master/player-prototype-sidtracker64/src/main.s#L648), debería estar la variable `turro_label`
 
 Probablemente haya que actualizar el archivito [vchar64](https://github.com/ricardoquesada/vchar64) que tiene los fonts:
 
