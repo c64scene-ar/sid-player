@@ -76,6 +76,18 @@ Probablemente haya que actualizar el archivito [vchar64](https://github.com/rica
 Editarlo y exportar el charset con el nombre de `pvm5-charset-multicolor` y ponerlo en `src`.
 El nombre completo al ser exportado debería ser (src/pvm5-charset-multicolor-charset.bin)[src/pvm5-charset-multicolor-charset.bin]
 
+### Actualizar el Sid
+
+En la [linea 728](https://github.com/c64scene-ar/sid-player/blob/master/player-prototype-sidtracker64/src/main.s#L728), reemplazar `mongolongo.sid` por el que corresponda
+
+
+### VU-Meter
+
+Para que el VU-meter este con la velocidad correcta, actualizar las variables que estan a partir de la [linea 420](https://github.com/c64scene-ar/sid-player/blob/master/player-prototype-sidtracker64/src/main.s#L420)
+
+Este paso es opcional, ya que si no se edita todo va a funcionar bien... solo que el vumeter va a sostenerse más o menos.
+Lo que hay que hacer es usar los valores de referencia que fueron calculados para 50hz, y hacer una regla de 3 simple y hacerlo para la frecuencia del nuevo Sid.
+
 ## Compilar y testear
 
 Desde el directorio `player-prototype-sidtracker64` (donde esta el archivito `Makefile`) hacer:
