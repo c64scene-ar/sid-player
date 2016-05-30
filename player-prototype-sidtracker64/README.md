@@ -1,5 +1,14 @@
 # Player para tema hecho con SidTracker64
 
+## Nota tecnica
+
+Como los temas hechos con SidTracker64 suelen estar exportados con una freq. "rara"
+(no es ni PAL y NTSC compatible), no se puede usar el raster IRQ:
+
+* ni para tocar el tema. se usa el timer CIA para tocarlo.
+* ni para hacer efectitos, porque puede colisionar con el timer CIA, y no queremos que el tema suene mal en ningún momento. se tiene que priorizar la música.
+
+
 ## Parsear el .sid
 
 * Con esta tool ([sid_info.py](https://github.com/ricardoquesada/c64-misc/blob/master/tools/sid_info.py) ), parsear el .sid:
