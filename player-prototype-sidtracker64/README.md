@@ -6,7 +6,7 @@ Como los temas hechos con SidTracker64 suelen estar exportados con una freq. "ra
 (no es ni PAL y NTSC compatible), no se puede usar el raster IRQ:
 
 * ni para tocar el tema. se usa el timer CIA para tocarlo.
-* ni para hacer efectitos, porque puede colisionar con el timer CIA, y no queremos que el tema suene mal en ningún momento. se tiene que priorizar la música.
+* ni para hacer efectitos, porque puede colisionar con el timer CIA. A no ser que se pueda garantizar que el sonido no va a ser afectado.
 
 
 ## Parsear el .sid
@@ -96,4 +96,4 @@ Hay que tener [cc65](http://cc65.github.io/cc65/) instalado en el path. Tener el
 
 ## Subir el nuevo player a repo
 
-Para el historial y demás cosas, subir el player a [c64scene-ar)(https://github.com/c64scene-ar/sid-player)
+Para el historial y demás cosas, subir el player a [c64scene-ar](https://github.com/c64scene-ar/sid-player)
