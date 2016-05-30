@@ -71,6 +71,13 @@ El nombre completo al ser exportado debería ser `src/pvm5-charset-multicolor-ch
 
 Desde el directorio `player-prototype-sidtracker64` (donde esta el archivito `Makefile`) hacer:
 
+Genera el archivito `pvm5.prg` y el `pvm5_dev.d64`
+```
+$ make
+```
+
+y este además corre el player en VICE con debug info para poder ser debugeado desde el monitor de VICE:
+
 ```
 $ make test
 ```
