@@ -31,7 +31,7 @@ SidTracker64 info:
 
 ## Actualizar el player
 
-* Abrir el `main.s` y editarlo
+* Abrir el [main.s](src/main.s) y editarlo
 
 ### Actualizar las constantes de SidTracker64
 
@@ -76,3 +76,7 @@ $ make test
 ```
 
 Hay que tener [cc65](http://cc65.github.io/cc65/) instalado en el path. Tener el [c1541](http://vice-emu.sourceforge.net/) en el path es opcional.
+
+## Subir el nuevo player a repo
+
+Para el historial y demás cosas, subir el player a [c64scene-ar)(https://github.com/c64scene-ar/sid-player)
