@@ -74,22 +74,23 @@ Probablemente haya que actualizar el archivito [vchar64](https://github.com/rica
 ![](https://lh3.googleusercontent.com/-aAAK1VWePBE/V0w2K4cWt1I/AAAAAAABeJc/M6PV5QmIX8okhXkTK03o0h00leUnwcncQCCo/s640/Screen%2BShot%2B2016-05-30%2Bat%2B9.36.05%2BAM.png)
 
 Editarlo y exportar el charset con el nombre de `pvm5-charset-multicolor` y ponerlo en `src`.
-El nombre completo al ser exportado debería ser `src/pvm5-charset-multicolor-charset.bin`
+El nombre completo al ser exportado debería ser (src/pvm5-charset-multicolor-charset.bin)[src/pvm5-charset-multicolor-charset.bin]
 
 ## Compilar y testear
 
 Desde el directorio `player-prototype-sidtracker64` (donde esta el archivito `Makefile`) hacer:
 
-Genera el archivito `pvm5.prg` y el `pvm5_dev.d64`
 ```
 $ make
 ```
+...para generar el archivito `pvm5.prg` y el `pvm5_dev.d64`
 
-y este además corre el player en VICE con debug info para poder ser debugeado desde el monitor de VICE:
+Y hacer:
 
 ```
 $ make test
 ```
+...para correr el player en VICE con debug info para poder ser debugeado desde el monitor de VICE.
 
 Hay que tener [cc65](http://cc65.github.io/cc65/) instalado en el path. Tener el [c1541](http://vice-emu.sourceforge.net/) en el path es opcional.
 
