@@ -885,13 +885,13 @@ codeend:
 	!source "src/song_dump.s"
 
 ;***** Logo charset *****
-	!source "src/logo2_.asm"
+	!source "src/logo.asm"
 ;***** Sprites *****
 	*=$34C0
-	!bin "src/sprites2.bin"
+	!bin "src/sprites.bin"
 ;***** Main charset *****
 	*=$3800
-	!bin "src/Arlek-05b_7bit_fixed_woz.bin" ;"src/charset2.bin"
+	!bin "src/charset.bin" ;"src/charset2.bin"
 
 ;***** Text *****
 
