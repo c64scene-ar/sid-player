@@ -38,9 +38,9 @@ SID_GATE0 = $1909
 SID_FREQ_TABLE_LO = $25fa
 SID_FREQ_TABLE_HI = $265a
 
-PAL_FREQ = $4a95
-NTSC_FREQ = $4d6b                       ; PAL_FREQ * 1022727 / 985248
-PALN_FREQ = $4d79                       ; PAL_FREQ * 1023440 / 985248
+PAL_FREQ = $5ab2
+NTSC_FREQ = $5f1e                       ; PAL_FREQ * 1022727 / 985248
+PALN_FREQ = $5f2f                       ; PAL_FREQ * 1023440 / 985248
 
 .segment "CODE"
         jmp __MAINCODE_LOAD__
