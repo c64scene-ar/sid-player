@@ -21,7 +21,7 @@ dev: prg
 dist: prg
 	exomizer sfx sys -o pvm5_exo.prg pvm5.prg
 	$(C1541) -format "pvm,18" d64 $(DIST_IMAGE)
-	$(C1541) $(DIST_IMAGE) -write pvm5_exo.prg "pverdes"
+	$(C1541) $(DIST_IMAGE) -write pvm5_exo.prg "liberacion"
 	$(C1541) $(DIST_IMAGE) -list
 
 test: dev
